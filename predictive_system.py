@@ -2,7 +2,7 @@ import numpy as np
 import pickle as pkl
 import streamlit as st 
 
-load_model = pkl.load(open('C:/Users/ssury/OneDrive/Desktop/internship project(working)/irisproject.sav','rb'))
+load_model = pkl.load(open('C:/Users/ssury/OneDrive/Desktop/internship project/irisproject.sav','rb'))
 def pred(x):
      x = np.asarray(x).reshape(1,-1)
      result = load_model.predict(x)
