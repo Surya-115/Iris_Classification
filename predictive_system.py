@@ -1,29 +1,40 @@
-import numpy as np
+import streamlit as st
 import pickle as pkl
-import streamlit as st 
+import pandas as pd
+import numpy as np  # Add numpy import for reshaping
 
-load_model = pkl.load(open('C:/Users/ssury/OneDrive/Desktop/internship project/irisproject.sav','rb'))
-def pred(x):
-     x = np.asarray(x).reshape(1,-1)
-     result = load_model.predict(x)
-     if result[0] == 0:
-         return("Satosa")
-     elif(result[0] == 1):
-         return("Versicolor")
-     else:
-         return("verginica")
+# Function to load the trained model
+@st.cache(allow_output_mutation=True)
+def load_model():
+    with open("irisproject.sav", "rb") as model_file:
+        model = pkl.load(model_file)
+    return model
 
+# Function to make predictions
+def predict_species(sepal_length, sepal_width, petal_length, petal_width, model):
+    features = [[sepal_length, sepal_width, petal_length, petal_width]]
+    prediction = model.predict(features)
+    return prediction[0]
 
+# Streamlit web app
 def main():
-     sl = st.number_input("Sepal-length")
-     sw = st.number_input("Sepal-width")
-     pl = st.number_input("Petal-length")
-     pw = st.number_input("Petal-width")
+    st.title("Iris Flower Species Prediction")
+    st.write("Enter the details of the iris flower to predict its species.")
 
-     data = [sl, sw, pl, pw]
+    # Load the model
+    model = load_model()
 
-     if st.button("Predict"):
-         st.write(pred(data))
+    # Input fields for user
+    sepal_length = st.slider("Sepal Length", 4.0, 8.0, 5.0)
+    sepal_width = st.slider("Sepal Width", 2.0, 4.5, 3.0)
+    petal_length = st.slider("Petal Length", 1.0, 7.0, 4.0)
+    petal_width = st.slider("Petal Width", 0.1, 2.5, 1.0)
+
+    # Predict button
+    if st.button("Predict"):
+        prediction = predict_species(sepal_length, sepal_width, petal_length, petal_width, model)
+        species_mapping = {0: "Setosa", 1: "Versicolor", 2: "Virginica"}
+        st.write(f"The predicted species is: {species_mapping[prediction]}")
 
 if __name__ == "__main__":
     main()
