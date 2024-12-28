@@ -36,3 +36,15 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+export PROJECT_ID=$(gcloud config get-value project)
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+--member=serviceAccount:$(gcloud projects describe $PROJECT_ID \
+--format="value(projectNumber)")@cloudbuild.gserviceaccount.com --role="roles/container.developer"
+
+kubectl expose deployment development-deployment \
+    --type=LoadBalancer \
+    --name=dev-deployment-service \
+    --port=8080 \
+    --target-port=8080 \
+    -n dev
